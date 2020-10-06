@@ -1,17 +1,17 @@
 import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import {BrowserRouter, Switch, Route} from "react-router-dom";
 import DevGame from "../DevGame/DevGame";
 import Login from "../Login/Login";
 import Lose from "../Lose/Lose";
 import Result from "../Result/Result";
 import Welcome from "../Welcome/Welcome";
 
-export default () => {
+const App = () => {
   return (
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
-          <Welcome 
+          <Welcome
             errorsCount={4}
           />
         </Route>
@@ -19,7 +19,7 @@ export default () => {
           <Login />
         </Route>
         <Route path="/result">
-          <Result 
+          <Result
             correctAnswersCount={1 + Math.round(Math.random() * 1000)}
             mistakesCount={1 + Math.round(Math.random() * 1000)}
           />
@@ -28,7 +28,7 @@ export default () => {
           <Lose />
         </Route>
         <Route path="/dev-artist">
-          <DevGame 
+          <DevGame
             gameType="artist"
           />
         </Route>
@@ -39,5 +39,7 @@ export default () => {
         </Route>
       </Switch>
     </BrowserRouter>
-  )
+  );
 };
+
+export default App;
