@@ -1,0 +1,99 @@
+{
+  "tracks": [
+    {
+      "id": 1,
+      "performer": "Король и Шут",
+      "title": "Камнем по голове",
+      "genre": "rock",
+      "src": ""
+    },
+    {
+      "id": 2,
+      "performer": "Сплин",
+      "title": "Приходи",
+      "genre": "rock",
+      "src": ""
+    },
+    {
+      "id": 3,
+      "performer": "Deep Purple",
+      "title": "Smoke On The Water",
+      "genre": "rock",
+      "src": ""
+    },
+    {
+      "id": 4,
+      "performer": "The Beetles",
+      "title": "Hard Day's Night",
+      "genre": "rock",
+      "src": ""
+    },
+    {
+      "id": 5,
+      "performer": "ABBA",
+      "title": "Happy New Year",
+      "genre": "pop",
+      "src": ""
+    },
+    {
+      "id": 6,
+      "performer": "ABBA",
+      "title": "Super Trouper",
+      "genre": "pop",
+      "src": ""
+    },
+    {
+      "id": 7,
+      "performer": "ABBA",
+      "title": "Dancing Queen",
+      "genre": "pop",
+      "src": ""
+    },
+    {
+      "id": 8,
+      "performer": "ABBA",
+      "title": "The Winner Takes It All",
+      "genre": "pop",
+      "src": ""
+    },
+    {
+      "id": 9,
+      "performer": "ABBA",
+      "title": "Gimme! Gimme! Gimme!",
+      "genre": "pop",
+      "src": ""
+    },
+    {
+      "id": 10,
+      "performer": "ABBA",
+      "title": "Waterloo",
+      "genre": "pop",
+      "src": ""
+    },
+    {
+      "id": 11,
+      "performer": "ABBA",
+      "title": "Money, Money, Money",
+      "genre": "pop",
+      "src": ""
+    },
+    {
+      "id": 12,
+      "performer": "ABBA",
+      "title": "I Have a Dream",
+      "genre": "pop",
+      "src": ""
+    }
+  ],
+  "genres": {
+    "rock": {
+      "display_name": "Rock'n'roll"
+    },
+    "pop": {
+      "display_name": "Популярная музыка"
+    },
+    "electronic": {
+      "display_name": "Электронная музыка"
+    }
+  }
+}
