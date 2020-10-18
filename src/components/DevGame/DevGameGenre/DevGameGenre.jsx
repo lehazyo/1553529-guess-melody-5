@@ -1,38 +1,36 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {Link, Redirect} from "react-router-dom";
+import Track from "../Track/Track";
 
 class DevGameGenre extends React.Component {
   constructor(props) {
     super(props);
 
-    let answerSlots = [];
-    for (let i = 0; i < props.tracksDisplayed; i++) {
-      answerSlots.push(false);
-    }
+    const answerSlots = new Array(props.tracksDisplayed).fill(false);
 
     this.questions = props.questions;
     this.tracksDisplayed = props.tracksDisplayed;
     this.currentRound = 0;
 
-    this.getNextQuestion();
+    this._getNextQuestion();
 
     this.state = {
-      "score": 0, // очки
-      "mistakesAvailable": props.mistakesCount, // доступные ошибки
-      "answers": answerSlots
+      score: 0,
+      mistakesAvailable: props.mistakesCount,
+      answers: answerSlots
     };
   }
 
-  getNextQuestion() {
+  _getNextQuestion() {
     let correctCount = 1 + Math.round(Math.random() * (this.tracksDisplayed - 1));
 
-    let availableGenres = this.getAvailableGenres();
+    let availableGenres = this._getAvailableGenres();
     let selectedGenre = availableGenres[Math.floor(Math.random() * availableGenres.length)];
-    let availableGenreTracks = this.getAvailableGenreTracks(selectedGenre);
-    availableGenreTracks = this.shuffleArray(availableGenreTracks);
+    let availableGenreTracks = this._getAvailableGenreTracks(selectedGenre);
+    availableGenreTracks = this._shuffleArray(availableGenreTracks);
 
-    let correctTracks = this.getCorrectTracks(correctCount, availableGenreTracks);
+    let correctTracks = this._getCorrectTracks(correctCount, availableGenreTracks);
     if (correctTracks.length === 0) {
       this.nextQuestion = null;
       return false;
@@ -41,7 +39,7 @@ class DevGameGenre extends React.Component {
     if (correctTracks.length >= this.tracksDisplayed) {
       if (typeof this.nextQuestion === `undefined`) {
         this.nextQuestion = {
-          "genre": selectedGenre
+          genre: selectedGenre
         };
       }
       this.nextQuestion.tracks = correctTracks;
@@ -51,8 +49,8 @@ class DevGameGenre extends React.Component {
     let questionTracks = correctTracks;
 
     let remainingWrongQuestionsCount = this.tracksDisplayed - correctTracks.length;
-    let wrongTracks = this.getWrongTracks(selectedGenre);
-    wrongTracks = this.shuffleArray(wrongTracks);
+    let wrongTracks = this._getWrongTracks(selectedGenre);
+    wrongTracks = this._shuffleArray(wrongTracks);
 
     for (let j = 0; j < remainingWrongQuestionsCount; j++) {
       let wrongTrackId = wrongTracks[j].id;
@@ -66,8 +64,8 @@ class DevGameGenre extends React.Component {
     }
 
     this.nextQuestion = {
-      "tracks": questionTracks,
-      "genre": selectedGenre
+      tracks: questionTracks,
+      genre: selectedGenre
     };
 
     this.currentRound++;
@@ -75,7 +73,7 @@ class DevGameGenre extends React.Component {
     return true;
   }
 
-  getCorrectTracks(correctCount, availableGenreTracks) {
+  _getCorrectTracks(correctCount, availableGenreTracks) {
     let correctTracks = [];
 
     for (let i = 0; i < correctCount; i++) {
@@ -96,7 +94,7 @@ class DevGameGenre extends React.Component {
     return correctTracks;
   }
 
-  getWrongTracks(selectedGenre) {
+  _getWrongTracks(selectedGenre) {
     let availableWrongTracks = [];
     for (let i = 0; i < this.questions.tracks.length; i++) {
       if (this.questions.tracks[i].genre === selectedGenre) {
@@ -107,7 +105,7 @@ class DevGameGenre extends React.Component {
     return availableWrongTracks;
   }
 
-  shuffleArray(a) {
+  _shuffleArray(a) {
     let j;
     let x;
     let i;
@@ -120,7 +118,7 @@ class DevGameGenre extends React.Component {
     return a;
   }
 
-  getAvailableGenreTracks(selectedGenre) {
+  _getAvailableGenreTracks(selectedGenre) {
     let availableGenreTracks = [];
 
     for (let i = 0; i < this.questions.tracks.length; i++) {
@@ -135,7 +133,7 @@ class DevGameGenre extends React.Component {
     return availableGenreTracks;
   }
 
-  renderMistakes() {
+  _renderMistakes() {
     let mistakesComponent = [];
     for (let i = 0; i < this.state.mistakesAvailable; i++) {
       mistakesComponent.push(<div key={i} className="wrong" />);
@@ -147,56 +145,24 @@ class DevGameGenre extends React.Component {
    * Renders tracks elements due to their quantity
    * @return {Array}
    */
-  renderTracks() {
+  _renderTracks() {
     let tracksArray = [];
     for (let i = 0; i < this.props.tracksDisplayed; i++) {
-      tracksArray.push(this.renderSingleTrack(i));
+      tracksArray.push(<Track index={i} track={this.nextQuestion.tracks[i]} />);
     }
     return tracksArray;
-  }
-
-  /**
-   * Renders single track element
-   * @param {number} index
-   * @return {React.Fragment}
-   */
-  renderSingleTrack(index) {
-    let track = this.nextQuestion.tracks[index];
-
-    return (
-      <React.Fragment key={index}>
-        <div className="track">
-          <button className="track__button track__button--play" type="button"></button>
-          <div className="track__status">
-            {track.performer} - {track.title}
-            <audio
-              src={track.src}
-            />
-          </div>
-          <div className="game__answer">
-            <input
-              className="game__input visually-hidden"
-              type="checkbox"
-              name={`answer-` + index}
-              id={`answer-` + index}
-            />
-            <label className="game__check" htmlFor={`answer-${index}`}>Отметить</label>
-          </div>
-        </div>
-      </React.Fragment>
-    );
   }
 
   /**
    * Gets genres that have tracks that were not used in game yet
    * @return {boolean}
    */
-  getAvailableGenres() {
+  _getAvailableGenres() {
     let genreKeys = Object.keys(this.questions.genres);
     let remainingGenres = [];
     let availableGenres = [];
     for (let i = 0; i < genreKeys.length; i++) {
-      if (typeof this.questions.genres[genreKeys[i]].noMoreTracks === `undefined`) {
+      if (!this.questions.genres[genreKeys[i]].noMoreTracks) {
         remainingGenres.push(genreKeys[i]);
       }
     }
@@ -226,12 +192,12 @@ class DevGameGenre extends React.Component {
     return availableGenres;
   }
 
-  getGenreName() {
+  _getGenreName() {
     let genreId = this.nextQuestion.genre;
     return this.questions.genres[genreId].display_name;
   }
 
-  handleSubmit(e) {
+  _handleSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
@@ -241,23 +207,23 @@ class DevGameGenre extends React.Component {
     }
 
     this.setState({
-      "answers": answersAsArray
+      answers: answersAsArray
     }, () => {
-      this.checkAnswers();
+      this._checkAnswers();
     });
 
     e.target.reset();
   }
 
-  checkAnswers() {
+  _checkAnswers() {
     let answerInfo = this.props.appCallback(this.nextQuestion, this.state.answers);
 
     this.setState({
-      "mistakesAvailable": this.state.mistakesAvailable + answerInfo.mistakesAvailable,
-      "score": (this.state.score + answerInfo.totalScore)
+      mistakesAvailable: this.state.mistakesAvailable + answerInfo.mistakesAvailable,
+      score: (this.state.score + answerInfo.totalScore)
     });
 
-    this.getNextQuestion();
+    this._getNextQuestion();
   }
 
   render() {
@@ -288,15 +254,15 @@ class DevGameGenre extends React.Component {
           </svg>
 
           <div className="game__mistakes">
-            {this.renderMistakes()}
+            {this._renderMistakes()}
           </div>
         </header>
 
         <section className="game__screen">
-          <h2 className="game__title">Выберите треки в жанре: {this.getGenreName()}</h2>
+          <h2 className="game__title">Выберите треки в жанре: {this._getGenreName()}</h2>
           <div>Раунд {this.currentRound} / Очки: {this.state.score}</div>
-          <form className="game__tracks" onSubmit={this.handleSubmit.bind(this)}>
-            {this.renderTracks()}
+          <form className="game__tracks" onSubmit={this._handleSubmit.bind(this)}>
+            {this._renderTracks()}
 
             <button
               className="game__submit button"

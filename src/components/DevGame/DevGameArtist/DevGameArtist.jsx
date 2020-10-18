@@ -8,15 +8,13 @@ class DevGameArtist extends React.Component {
     this.questions = props.questions;
 
     this.state = {
-      "score": 0, // очки
-      "rounds": 0 // общее число вопросов
+      score: 0,
+      rounds: 0
     };
   }
 
   render() {
-    return (
-      <div />
-    );
+    return null;
   }
 }
 

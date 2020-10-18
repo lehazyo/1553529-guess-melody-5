@@ -87,13 +87,16 @@
   ],
   "genres": {
     "rock": {
-      "display_name": "Rock'n'roll"
+      "display_name": "Rock'n'roll",
+      "noMoreTracks": false
     },
     "pop": {
-      "display_name": "Популярная музыка"
+      "display_name": "Популярная музыка",
+      "noMoreTracks": false
     },
     "electronic": {
-      "display_name": "Электронная музыка"
+      "display_name": "Электронная музыка",
+      "noMoreTracks": true
     }
   }
 }

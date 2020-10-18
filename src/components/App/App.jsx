@@ -12,26 +12,23 @@ class App extends React.Component {
     super(props);
   }
 
-  validateAnswer(question, answer) {
+  _validateAnswer(question, answer) {
     let totalScore = 0;
     let mistakesAvailable = 0;
 
-    for (let i = 0; i < question.tracks.length; i++) {
-      if (answer[i]) {
-        if (question.tracks[i].genre === question.genre) {
+    question.tracks.forEach((track, index) => {
+      if (answer[index]) {
+        if (track.genre === question.genre) {
           totalScore++;
         }
       }
-    }
+    });
 
     if (!totalScore) {
       mistakesAvailable--;
     }
 
-    return {
-      "mistakesAvailable": mistakesAvailable,
-      "totalScore": totalScore
-    };
+    return {mistakesAvailable, totalScore};
   }
 
   render() {
@@ -60,7 +57,7 @@ class App extends React.Component {
               questions={this.props.questions}
               tracksDisplayed={this.props.tracksDisplayed}
               mistakesCount={this.props.mistakesCount}
-              appCallback={this.validateAnswer}
+              appCallback={this._validateAnswer}
             />
           </Route>
         </Switch>
