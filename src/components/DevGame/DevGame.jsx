@@ -1,15 +1,21 @@
 import React from "react";
 import PropTypes from "prop-types";
+import DevGameGenre from "./DevGameGenre/DevGameGenre";
+import DevGameArtist from "./DevGameArtist/DevGameArtist";
 
 const DevGame = (props) => {
   if (props.gameType === `artist`) {
     return (
-      <div>По исполнителю</div>
+      <DevGameArtist />
     );
   }
   if (props.gameType === `genre`) {
     return (
-      <div>По жанру</div>
+      <DevGameGenre
+        questions={props.questions}
+        mistakesCount={props.mistakesCount}
+        tracksDisplayed={props.tracksDisplayed}
+      />
     );
   }
   throw new Error(`gameType not specified`);
