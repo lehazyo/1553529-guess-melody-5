@@ -6,10 +6,13 @@ import DevGameArtist from "./DevGameArtist/DevGameArtist";
 const DevGame = (props) => {
   if (props.gameType === `artist`) {
     return (
-      <DevGameArtist />
+      <DevGameArtist
+        questions={props.questions}
+        mistakesCount={props.mistakesCount}
+        performersCount={3}
+      />
     );
-  }
-  if (props.gameType === `genre`) {
+  } else if (props.gameType === `genre`) {
     return (
       <DevGameGenre
         questions={props.questions}
@@ -17,8 +20,9 @@ const DevGame = (props) => {
         tracksDisplayed={props.tracksDisplayed}
       />
     );
+  } else {
+    throw new Error(`Unknown gameType`);
   }
-  throw new Error(`gameType not specified`);
 };
 
 DevGame.propTypes = {

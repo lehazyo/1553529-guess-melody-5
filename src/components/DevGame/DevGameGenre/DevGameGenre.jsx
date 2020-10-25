@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {Link, Redirect} from "react-router-dom";
-import Track from "../Track/Track";
+import Track from "../../Track/Track";
 
 class DevGameGenre extends React.Component {
   constructor(props) {
@@ -18,7 +18,8 @@ class DevGameGenre extends React.Component {
     this.state = {
       score: 0,
       mistakesAvailable: props.mistakesCount,
-      answers: answerSlots
+      answers: answerSlots,
+      playingId: 0
     };
   }
 
@@ -148,7 +149,19 @@ class DevGameGenre extends React.Component {
   _renderTracks() {
     let tracksArray = [];
     for (let i = 0; i < this.props.tracksDisplayed; i++) {
-      tracksArray.push(<Track index={i} track={this.nextQuestion.tracks[i]} />);
+      let track = this.nextQuestion.tracks[i];
+      tracksArray.push(<Track
+        key={track.id}
+        track={track}
+        index={i}
+        isPlaying={(track.id === this.state.playingId)}
+        onPlayButtonClick={() => {
+          this.setState({
+            playingId: (this.state.playingId === track.id) ? 0 : track.id
+          });
+        }}
+        hasRadiobuttons={true}
+      />);
     }
     return tracksArray;
   }
@@ -228,7 +241,7 @@ class DevGameGenre extends React.Component {
 
   render() {
     if (this.nextQuestion === null) {
-      return <Redirect to="/" />;
+      return <Redirect to="/result" />;
     }
 
     return (

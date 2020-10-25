@@ -52,10 +52,20 @@ class App extends React.Component {
           <Route path="/lose">
             <Lose />
           </Route>
-          <Route path="/game">
+          <Route path="/game-genre">
             <GameScreen
+              gameType={`genre`}
               questions={this.props.questions}
               tracksDisplayed={this.props.tracksDisplayed}
+              mistakesCount={this.props.mistakesCount}
+              appCallback={this._validateAnswer}
+            />
+          </Route>
+          <Route path="/game-artist">
+            <GameScreen
+              gameType={`artist`}
+              questions={this.props.questions}
+              performersCount={this.props.performersCount}
               mistakesCount={this.props.mistakesCount}
               appCallback={this._validateAnswer}
             />
@@ -69,7 +79,8 @@ class App extends React.Component {
 App.propTypes = {
   questions: PropTypes.object,
   mistakesCount: PropTypes.number,
-  tracksDisplayed: PropTypes.number
+  tracksDisplayed: PropTypes.number,
+  performersCount: PropTypes.number
 };
 
 export default App;

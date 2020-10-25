@@ -1,26 +1,30 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Audioplayer from "../Audioplayer/Audioplayer";
 
 const Track = (props) => {
   return (
     <React.Fragment key={props.track.id}>
       <div className="track">
-        <button className="track__button track__button--play" type="button"></button>
+        <Audioplayer
+          track={props.track}
+          isPlaying={props.isPlaying}
+          onPlayButtonClick={props.onPlayButtonClick}
+        />
         <div className="track__status">
           {props.track.performer} - {props.track.title}
-          <audio
-            src={props.track.src}
-          />
         </div>
-        <div className="game__answer">
-          <input
-            className="game__input visually-hidden"
-            type="checkbox"
-            name={`answer-` + props.index}
-            id={`answer-` + props.index}
-          />
-          <label className="game__check" htmlFor={`answer-${props.index}`}>Отметить</label>
-        </div>
+        {props.hasRadiobuttons && (
+          <div className="game__answer">
+            <input
+              className="game__input visually-hidden"
+              type="checkbox"
+              name={`answer-` + props.index}
+              id={`answer-` + props.index}
+            />
+            <label className="game__check" htmlFor={`answer-${props.index}`}>Отметить</label>
+          </div>
+        ) }
       </div>
     </React.Fragment>
   );
@@ -28,7 +32,10 @@ const Track = (props) => {
 
 Track.propTypes = {
   track: PropTypes.object,
-  index: PropTypes.number
+  index: PropTypes.number,
+  isPlaying: PropTypes.bool,
+  onPlayButtonClick: PropTypes.func,
+  hasRadiobuttons: PropTypes.bool
 };
 
 export default Track;
