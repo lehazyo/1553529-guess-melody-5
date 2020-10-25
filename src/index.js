@@ -7,6 +7,7 @@ ReactDOM.render(
     <App
       questions={questions}
       mistakesCount={5}
+      performersCount={3}
       tracksDisplayed={4}
     />,
     document.getElementById(`root`)
