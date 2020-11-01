@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {Link, Redirect} from "react-router-dom";
 import Track from "../../Track/Track";
+import MistakesBar from "../../MistakesBar/MistakesBar";
 
 class DevGameGenre extends React.Component {
   constructor(props) {
@@ -11,19 +12,18 @@ class DevGameGenre extends React.Component {
 
     this.questions = props.questions;
     this.tracksDisplayed = props.tracksDisplayed;
-    this.currentRound = 0;
 
     this._getNextQuestion();
 
     this.state = {
-      score: 0,
-      mistakesAvailable: props.mistakesCount,
       answers: answerSlots,
       playingId: 0
     };
   }
 
   _getNextQuestion() {
+    this.props.onUserAnswer();
+
     let correctCount = 1 + Math.round(Math.random() * (this.tracksDisplayed - 1));
 
     let availableGenres = this._getAvailableGenres();
@@ -33,7 +33,7 @@ class DevGameGenre extends React.Component {
 
     let correctTracks = this._getCorrectTracks(correctCount, availableGenreTracks);
     if (correctTracks.length === 0) {
-      this.nextQuestion = null;
+      this.props.resetGame();
       return false;
     }
 
@@ -68,8 +68,6 @@ class DevGameGenre extends React.Component {
       tracks: questionTracks,
       genre: selectedGenre
     };
-
-    this.currentRound++;
 
     return true;
   }
@@ -134,14 +132,6 @@ class DevGameGenre extends React.Component {
     return availableGenreTracks;
   }
 
-  _renderMistakes() {
-    let mistakesComponent = [];
-    for (let i = 0; i < this.state.mistakesAvailable; i++) {
-      mistakesComponent.push(<div key={i} className="wrong" />);
-    }
-    return mistakesComponent;
-  }
-
   /**
    * Renders tracks elements due to their quantity
    * @return {Array}
@@ -172,22 +162,10 @@ class DevGameGenre extends React.Component {
    */
   _getAvailableGenres() {
     let genreKeys = Object.keys(this.questions.genres);
-    let remainingGenres = [];
     let availableGenres = [];
+
     for (let i = 0; i < genreKeys.length; i++) {
-      if (!this.questions.genres[genreKeys[i]].noMoreTracks) {
-        remainingGenres.push(genreKeys[i]);
-      }
-    }
-
-    // we cannot run game in there are less than two genres
-    if (remainingGenres.length < 2) {
-      this.nextQuestion = null;
-      return false;
-    }
-
-    for (let i = 0; i < remainingGenres.length; i++) {
-      let currentGenre = remainingGenres[i];
+      let currentGenre = genreKeys[i];
       let noMoreTracks = true;
       for (let j = 0; j < this.questions.tracks.length; j++) {
         if (this.questions.tracks[j].genre === currentGenre) {
@@ -229,12 +207,21 @@ class DevGameGenre extends React.Component {
   }
 
   _checkAnswers() {
-    let answerInfo = this.props.appCallback(this.nextQuestion, this.state.answers);
+    let totalScore = 0;
 
-    this.setState({
-      mistakesAvailable: this.state.mistakesAvailable + answerInfo.mistakesAvailable,
-      score: (this.state.score + answerInfo.totalScore)
+    this.nextQuestion.tracks.forEach((track, index) => {
+      if (this.state.answers[index]) {
+        if (track.genre === this.nextQuestion.genre) {
+          totalScore++;
+        }
+      }
     });
+
+    this.props.increaseScore(totalScore);
+
+    if (!totalScore) {
+      this.props.increaseMistakes();
+    }
 
     this._getNextQuestion();
   }
@@ -266,14 +253,15 @@ class DevGameGenre extends React.Component {
             />
           </svg>
 
-          <div className="game__mistakes">
-            {this._renderMistakes()}
-          </div>
+          <MistakesBar
+            maximumMistakes={this.props.maximumMistakes}
+            mistakesCount={this.props.mistakesCount}
+          />
         </header>
 
         <section className="game__screen">
           <h2 className="game__title">Выберите треки в жанре: {this._getGenreName()}</h2>
-          <div>Раунд {this.currentRound} / Очки: {this.state.score}</div>
+          <div>Раунд {this.props.round} / Очки: {this.props.score}</div>
           <form className="game__tracks" onSubmit={this._handleSubmit.bind(this)}>
             {this._renderTracks()}
 
@@ -294,7 +282,14 @@ DevGameGenre.propTypes = {
   questions: PropTypes.object,
   tracksDisplayed: PropTypes.number,
   mistakesCount: PropTypes.number,
-  appCallback: PropTypes.func
+  maximumMistakes: PropTypes.number,
+  resetGame: PropTypes.func,
+  goToNextQuestion: PropTypes.func,
+  round: PropTypes.number,
+  score: PropTypes.number,
+  onUserAnswer: PropTypes.func,
+  increaseMistakes: PropTypes.func,
+  increaseScore: PropTypes.func
 };
 
 export default DevGameGenre;

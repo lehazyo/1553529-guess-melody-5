@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import {Redirect} from "react-router-dom";
 import ArtistAnswer from "../../ArtistAnswer/ArtistAnswer";
 import Track from "../../Track/Track";
+import MistakesBar from "../../MistakesBar/MistakesBar";
 
 class DevGameArtist extends React.Component {
   constructor(props) {
@@ -15,8 +16,6 @@ class DevGameArtist extends React.Component {
     this._possiblePerformers = this._makePossiblePerformers();
 
     this.state = {
-      score: 0,
-      round: 1,
       currentAnswerIndex: -1,
       mistakesAvailable: props.mistakesCount,
       trackIsPlaying: false
@@ -31,10 +30,6 @@ class DevGameArtist extends React.Component {
   _nextRound() {
     this._getNextTrack();
     this._getNextPerformers();
-    this.setState({
-      round: (this.state.round + 1),
-      currentAnswerIndex: -1
-    });
   }
 
   _shuffleArray(a) {
@@ -65,6 +60,8 @@ class DevGameArtist extends React.Component {
   }
 
   _getNextTrack() {
+    this.props.onUserAnswer();
+
     this._nextTrack = this._availableTracks[0];
     this._availableTracks.shift();
   }
@@ -106,26 +103,14 @@ class DevGameArtist extends React.Component {
     });
   }
 
-  _renderMistakes() {
-    let mistakesComponent = [];
-    for (let i = 0; i < this.state.mistakesAvailable; i++) {
-      mistakesComponent.push(<div key={i} className="wrong" />);
-    }
-    return mistakesComponent;
-  }
-
   _handleSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
     if (formData.get(`answer`) === this._nextTrack.performer) {
-      this.setState({
-        score: (this.state.score + 1)
-      });
+      this.props.increaseScore(1);
     } else {
-      this.setState({
-        mistakesAvailable: (this.state.mistakesAvailable - 1)
-      });
+      this.props.increaseMistakes();
     }
 
     this._nextRound();
@@ -137,12 +122,6 @@ class DevGameArtist extends React.Component {
     if (this._nextTrack === undefined) {
       return (
         <Redirect to="/result" />
-      );
-    }
-
-    if (this.state.mistakesAvailable === 0) {
-      return (
-        <Redirect to="/lose" />
       );
     }
 
@@ -168,14 +147,15 @@ class DevGameArtist extends React.Component {
             />
           </svg>
 
-          <div className="game__mistakes">
-            {this._renderMistakes()}
-          </div>
+          <MistakesBar
+            maximumMistakes={this.props.maximumMistakes}
+            mistakesCount={this.props.mistakesCount}
+          />
         </header>
 
         <section className="game__screen">
           <h2 className="game__title">Кто издаёт эти звуки?</h2>
-          <p className="">Раунд: {this.state.round} / Очки: {this.state.score}</p>
+          <p className="">Раунд: {this.props.round} / Очки: {this.props.score}</p>
           <div className="game__track">
             <Track
               track={this._nextTrack}
@@ -226,7 +206,13 @@ class DevGameArtist extends React.Component {
 DevGameArtist.propTypes = {
   questions: PropTypes.object,
   performersCount: PropTypes.number,
-  mistakesCount: PropTypes.number
+  maximumMistakes: PropTypes.number,
+  mistakesCount: PropTypes.number,
+  onUserAnswer: PropTypes.func,
+  increaseScore: PropTypes.func,
+  increaseMistakes: PropTypes.func,
+  round: PropTypes.number,
+  score: PropTypes.number
 };
 
 export default DevGameArtist;

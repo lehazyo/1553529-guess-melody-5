@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 const Lose = () => {
   return (
@@ -8,7 +9,12 @@ const Lose = () => {
       </div>
       <h2 className="result__title">Какая жалость!</h2>
       <p className="result__total result__total--fail">У вас закончились все попытки. Ничего, повезёт в следующий раз!</p>
-      <button className="replay" type="button">Попробовать ещё раз</button>
+      <Link
+        className="replay"
+        to="/"
+      >
+        Попробовать ещё раз
+      </Link>
     </section>
   );
 };

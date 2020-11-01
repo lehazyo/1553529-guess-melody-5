@@ -6,6 +6,7 @@ import Result from "../Result/Result";
 import Welcome from "../Welcome/Welcome";
 import PropTypes from "prop-types";
 import GameScreen from "../GameScreen/GameScreen";
+import {ActionCreator} from "../../action.js";
 
 class App extends React.Component {
   constructor(props) {
@@ -19,13 +20,17 @@ class App extends React.Component {
     question.tracks.forEach((track, index) => {
       if (answer[index]) {
         if (track.genre === question.genre) {
-          totalScore++;
+          this.props.store.dispatch({
+            type: ActionCreator.increaseScore
+          });
         }
       }
     });
 
     if (!totalScore) {
-      mistakesAvailable--;
+      this.props.store.dispatch({
+        type: ActionCreator.increaseMistakes
+      });
     }
 
     return {mistakesAvailable, totalScore};
@@ -55,19 +60,19 @@ class App extends React.Component {
           <Route path="/game-genre">
             <GameScreen
               gameType={`genre`}
+              mistakesCount={this.props.mistakesCount}
+              maximumMistakes={this.props.maximumMistakes}
               questions={this.props.questions}
               tracksDisplayed={this.props.tracksDisplayed}
-              mistakesCount={this.props.mistakesCount}
-              appCallback={this._validateAnswer}
             />
           </Route>
           <Route path="/game-artist">
             <GameScreen
               gameType={`artist`}
+              mistakesCount={this.props.mistakesCount}
+              maximumMistakes={this.props.maximumMistakes}
               questions={this.props.questions}
               performersCount={this.props.performersCount}
-              mistakesCount={this.props.mistakesCount}
-              appCallback={this._validateAnswer}
             />
           </Route>
         </Switch>
@@ -79,8 +84,10 @@ class App extends React.Component {
 App.propTypes = {
   questions: PropTypes.object,
   mistakesCount: PropTypes.number,
+  maximumMistakes: PropTypes.number,
   tracksDisplayed: PropTypes.number,
-  performersCount: PropTypes.number
+  performersCount: PropTypes.number,
+  store: PropTypes.object
 };
 
 export default App;
