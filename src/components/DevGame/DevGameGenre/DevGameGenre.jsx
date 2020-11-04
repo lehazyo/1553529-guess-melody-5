@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import {Link, Redirect} from "react-router-dom";
 import Track from "../../Track/Track";
 import MistakesBar from "../../MistakesBar/MistakesBar";
+import {ActionCreator} from "../../../action";
+import {connect} from "react-redux";
 
 class DevGameGenre extends React.Component {
   constructor(props) {
@@ -33,6 +35,7 @@ class DevGameGenre extends React.Component {
 
     let correctTracks = this._getCorrectTracks(correctCount, availableGenreTracks);
     if (correctTracks.length === 0) {
+      this.nextQuestion = null;
       this.props.resetGame();
       return false;
     }
@@ -168,7 +171,8 @@ class DevGameGenre extends React.Component {
       let currentGenre = genreKeys[i];
       let noMoreTracks = true;
       for (let j = 0; j < this.questions.tracks.length; j++) {
-        if (this.questions.tracks[j].genre === currentGenre) {
+        let track = this.questions.tracks[j];
+        if (track.available !== false && track.genre === currentGenre) {
           noMoreTracks = false;
           break;
         }
@@ -207,20 +211,23 @@ class DevGameGenre extends React.Component {
   }
 
   _checkAnswers() {
-    let totalScore = 0;
+    let hasErrors = false;
 
-    this.nextQuestion.tracks.forEach((track, index) => {
+    const totalScore = this.nextQuestion.tracks.reduce((accumulator, currentTrack, index) => {
       if (this.state.answers[index]) {
-        if (track.genre === this.nextQuestion.genre) {
-          totalScore++;
+        if (currentTrack.genre === this.nextQuestion.genre) {
+          return accumulator + 1;
+        } else {
+          hasErrors = true;
         }
       }
-    });
+      return accumulator;
+    }, 0);
 
-    this.props.increaseScore(totalScore);
-
-    if (!totalScore) {
+    if (hasErrors || !totalScore) {
       this.props.increaseMistakes();
+    } else {
+      this.props.increaseScore(totalScore);
     }
 
     this._getNextQuestion();
@@ -280,9 +287,9 @@ class DevGameGenre extends React.Component {
 
 DevGameGenre.propTypes = {
   questions: PropTypes.object,
+  maximumMistakes: PropTypes.number,
   tracksDisplayed: PropTypes.number,
   mistakesCount: PropTypes.number,
-  maximumMistakes: PropTypes.number,
   resetGame: PropTypes.func,
   goToNextQuestion: PropTypes.func,
   round: PropTypes.number,
@@ -292,4 +299,26 @@ DevGameGenre.propTypes = {
   increaseScore: PropTypes.func
 };
 
-export default DevGameGenre;
+const mapStateToProps = (state) => ({
+  round: state.round,
+  score: state.score,
+  mistakesCount: state.mistakesCount
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  resetGame() {
+    dispatch(ActionCreator.resetGame());
+  },
+  increaseMistakes() {
+    dispatch(ActionCreator.increaseMistakes());
+  },
+  increaseScore(score) {
+    dispatch(ActionCreator.increaseScore(score));
+  },
+  onUserAnswer() {
+    dispatch(ActionCreator.goToNextQuestion());
+  }
+});
+
+export {DevGameGenre};
+export default connect(mapStateToProps, mapDispatchToProps)(DevGameGenre);

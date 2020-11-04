@@ -4,6 +4,8 @@ import {Redirect} from "react-router-dom";
 import ArtistAnswer from "../../ArtistAnswer/ArtistAnswer";
 import Track from "../../Track/Track";
 import MistakesBar from "../../MistakesBar/MistakesBar";
+import {ActionCreator} from "../../../action";
+import {connect} from "react-redux";
 
 class DevGameArtist extends React.Component {
   constructor(props) {
@@ -205,8 +207,8 @@ class DevGameArtist extends React.Component {
 
 DevGameArtist.propTypes = {
   questions: PropTypes.object,
-  performersCount: PropTypes.number,
   maximumMistakes: PropTypes.number,
+  performersCount: PropTypes.number,
   mistakesCount: PropTypes.number,
   onUserAnswer: PropTypes.func,
   increaseScore: PropTypes.func,
@@ -215,4 +217,26 @@ DevGameArtist.propTypes = {
   score: PropTypes.number
 };
 
-export default DevGameArtist;
+const mapStateToProps = (state) => ({
+  round: state.round,
+  score: state.score,
+  mistakesCount: state.mistakesCount
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  resetGame() {
+    dispatch(ActionCreator.resetGame());
+  },
+  increaseMistakes() {
+    dispatch(ActionCreator.increaseMistakes());
+  },
+  increaseScore(score) {
+    dispatch(ActionCreator.increaseScore(score));
+  },
+  onUserAnswer() {
+    dispatch(ActionCreator.goToNextQuestion());
+  }
+});
+
+export {DevGameArtist};
+export default connect(mapStateToProps, mapDispatchToProps)(DevGameArtist);

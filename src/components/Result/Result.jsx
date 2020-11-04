@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import {Link} from "react-router-dom";
 
 const inclineByCount = (count, singular, plural24, pluralCommon) => {
   const count10 = count % 10;
@@ -29,7 +30,7 @@ const Result = (props) => {
       <p className="result__total">
         Вы ответили правильно на {props.correctAnswersCount} {inclineByCount(props.correctAnswersCount, `вопрос`, `вопроса`, `вопросов`)} и совершили {props.mistakesCount} {inclineByCount(props.mistakesCount, `ошибку`, `ошибки`, `ошибок`)}
       </p>
-      <button className="replay" type="button">Сыграть ещё раз</button>
+      <Link className="replay" type="button" to="/">Сыграть ещё раз</Link>
     </section>
   );
 };
